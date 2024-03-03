@@ -8,14 +8,34 @@ sys.path.append(ruta_src)
 
 def load_corpus():
     dataset = ir_datasets.load("cranfield")
-    documents = [doc.text for doc in dataset.docs_iter()]
-    return documents
+    # documents = [doc.text for doc in dataset.docs_iter()]
+    cranfieldDoc = {}
+    documents = []
+    for doc in dataset.docs_iter():
+        cranfieldDoc[doc[0]] = {'doc_id': doc[0], 
+                                    'title': doc[1],
+                                    'text': doc[2],
+                                    'author': doc[3],
+                                    'bib': doc[4]}
+        documents.append(doc.text)
+
+    genericQuery = {}
+    for query in dataset.queries_iter():
+        genericQuery[query[0]] = [query[1]]
+    
+    trecQrel = {}
+    for qrel in dataset.qrels_iter():
+        trecQrel[qrel[0]] = {'doc_id': qrel[1],
+                             'relevance': qrel[2], 
+                             'iteration': qrel[3]}
+
+    return cranfieldDoc, documents, genericQuery, trecQrel
 
 class ProcessingData:
 
     def __init__(self, nlp):
         self.nlp = nlp
-        self.documents = load_corpus()
+        self.cranfieldDoc, self.documents, self.querys, self.trecQrel  = load_corpus()
         self.tokenized_docs = self.process_documents(self.documents)
         self.dictionary = gensim.corpora.Dictionary(self.tokenized_docs)
         self.tokenized_docs = self.filter_tokens_by_occurrence(

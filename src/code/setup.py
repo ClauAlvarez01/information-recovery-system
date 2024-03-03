@@ -10,7 +10,10 @@ nlp_instance=spacy.load("en_core_web_sm")
 
 processing_data = ProcessingData(nlp_instance)
 
+cranfieldDoc = processing_data.cranfieldDoc 
 documents = {i + 1: doc for i, doc in enumerate(processing_data.documents)}
+querys = processing_data.querys
+trecQrel = processing_data.trecQrel
 
 documents_per_token = {}
 for index, token in enumerate(processing_data.tokenized_docs):
@@ -37,3 +40,6 @@ def save_documents_to_json(text, json_file_name, file='data'):
 
 save_documents_to_json(documents, 'documents.json', file='data')
 save_documents_to_json(documents_per_token, 'docs_per_token.json', file='data')
+save_documents_to_json(cranfieldDoc, 'cranfieldDoc.json', file='data')
+save_documents_to_json(querys, 'querys.json', file='data')
+save_documents_to_json(trecQrel, 'trecQrel.json', file='data')
