@@ -14,5 +14,5 @@ export interface Metrics{
 
 export interface Metric{
     boolean: string,
-    vectorial: string
+    other: string
 }

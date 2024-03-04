@@ -81,15 +81,15 @@ def test(request):
     metrics = {
         'precision': {
             'boolean': '0.57',
-            'vectorial': '0.90'
+            'other': '0.90'
         },
         'recovered': {
             'boolean': '0.20',
-            'vectorial': '0.46'
+            'other': '0.46'
         },
         'f1': {
             'boolean': '0.39',
-            'vectorial': '0.49'
+            'other': '0.49'
         }
     }
 

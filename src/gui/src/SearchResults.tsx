@@ -50,25 +50,25 @@ function SearchResults({ results, metrics }: Props) {
               </div>
             ))}
           </div>
-          {metrics && <div className="w-auto min-w-64 lg:mr-20">
-            <label className="text-3xl">Metrics</label>
+          {metrics && <div className="w-auto min-w-64 lg:mr-20 p-5 border h-full bg-gray-50 text-left rounded-xl">
+            <label className="text-3xl">Metrics:</label>
 
             <div className="mt-10">
                 <label className="text-lg shadow-sm">Precision:</label>
                 <p className="font-mono">Boolean: {metrics.precision.boolean}</p>
-                <p className="font-mono">Vectorial: {metrics.precision.vectorial}</p>
+                <p className="font-mono">Other: {metrics.precision.other}</p>
             </div>
             
             <div className="mt-5">
                 <label className="text-lg shadow-sm">Recovered:</label>
                 <p className="font-mono">Boolean: {metrics.recovered.boolean}</p>
-                <p className="font-mono">Vectorial: {metrics.recovered.vectorial}</p>
+                <p className="font-mono">Other: {metrics.recovered.other}</p>
             </div>
 
             <div className="mt-5">
                 <label className="text-lg shadow-sm">F1:</label>
                 <p className="font-mono">Boolean: {metrics.f1.boolean}</p>
-                <p className="font-mono">Vectorial: {metrics.f1.vectorial}</p>
+                <p className="font-mono">Other: {metrics.f1.other}</p>
             </div>
 
           </div>}
