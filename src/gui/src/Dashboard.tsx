@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import axios from "axios";
-import { Document } from "./types/types";
+import { Document, Metrics } from "./types/types";
 import SearchResults from "./SearchResults";
 
 function Dashboard() {
   const [searchResults, setSearchResults] = useState<Document[]>([]);
+  const [metrics, setMetrics] = useState<Metrics>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/test/");
-        setSearchResults(response.data.data);
+        setSearchResults(response.data.docs);
+        setMetrics(response.data.metrics);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -46,8 +48,8 @@ function Dashboard() {
             <SearchBar />
           </div>
 
-          <SearchResults results={searchResults} />
-          
+          <SearchResults results={searchResults} metrics={metrics} />
+        
         </main>
       </div>
     </>

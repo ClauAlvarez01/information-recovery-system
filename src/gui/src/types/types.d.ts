@@ -5,3 +5,14 @@ export interface Document{
     author: string,
     bib: string
 }
+
+export interface Metrics{
+    precision: Metric
+    recovered: Metric
+    f1: Metric
+}
+
+export interface Metric{
+    boolean: string,
+    vectorial: string
+}

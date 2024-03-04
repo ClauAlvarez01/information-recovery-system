@@ -1,10 +1,11 @@
-import { Document } from "./types/types";
+import { Document, Metrics } from "./types/types";
 
 interface Props {
   results: Document[];
+  metrics: Metrics|undefined;
 }
 
-function SearchResults({ results }: Props) {
+function SearchResults({ results, metrics }: Props) {
   function truncateString(text: string): string {
     const maxLength = 300;
     if (text.length <= maxLength) {
@@ -49,7 +50,28 @@ function SearchResults({ results }: Props) {
               </div>
             ))}
           </div>
-          <div className="bg-gray-300 w-auto min-w-64 lg:mr-20">Metrics</div>
+          {metrics && <div className="w-auto min-w-64 lg:mr-20">
+            <label className="text-3xl">Metrics</label>
+
+            <div className="mt-10">
+                <label className="text-lg shadow-sm">Precision:</label>
+                <p className="font-mono">Boolean: {metrics.precision.boolean}</p>
+                <p className="font-mono">Vectorial: {metrics.precision.vectorial}</p>
+            </div>
+            
+            <div className="mt-5">
+                <label className="text-lg shadow-sm">Recovered:</label>
+                <p className="font-mono">Boolean: {metrics.recovered.boolean}</p>
+                <p className="font-mono">Vectorial: {metrics.recovered.vectorial}</p>
+            </div>
+
+            <div className="mt-5">
+                <label className="text-lg shadow-sm">F1:</label>
+                <p className="font-mono">Boolean: {metrics.f1.boolean}</p>
+                <p className="font-mono">Vectorial: {metrics.f1.vectorial}</p>
+            </div>
+
+          </div>}
         </div>
       )}
     </>

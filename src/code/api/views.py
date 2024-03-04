@@ -5,7 +5,7 @@ from rest_framework.response import Response
 # http://localhost:8000/api/test
 @api_view(['GET'])
 def test(request):
-    data = [
+    docs = [
         {
             'doc_id': '1',
             'title': 'Título del Documento 1',
@@ -78,4 +78,19 @@ def test(request):
         }
     ]
 
-    return Response({'data': data})
+    metrics = {
+        'precision': {
+            'boolean': '0.57',
+            'vectorial': '0.90'
+        },
+        'recovered': {
+            'boolean': '0.20',
+            'vectorial': '0.46'
+        },
+        'f1': {
+            'boolean': '0.39',
+            'vectorial': '0.49'
+        }
+    }
+
+    return Response({'docs': docs, 'metrics': metrics})
