@@ -1,6 +1,23 @@
+import { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
+import axios from "axios";
 
 function Dashboard() {
+    const [searchResults, setSearchResults] = useState<Document[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/test/');
+                setSearchResults(response.data.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <>
             <div className="min-h-full">
@@ -22,6 +39,9 @@ function Dashboard() {
                 <main>
                     <div className="mx-auto mt-10 max-w-7xl py-6 sm:px-6 lg:px-8">
                         <SearchBar/>
+                        {searchResults.map((doc) => (
+                            <div>{doc.title}</div>
+                        ))}
                     </div>
                 </main>
             </div>
