@@ -1,10 +1,12 @@
+import SearchBar from "./SearchBar";
+
 function Dashboard() {
     return (
         <>
             <div className="min-h-full">
 
                 <div className="shadow-xl">
-                    <nav className="bg-sky-300 shadow-xl">
+                    <nav className="bg-sky-300 shadow-lg">
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 sha">
                             <div className="flex h-16 items-center justify-between">
                                 <div className="flex items-center">
@@ -17,15 +19,9 @@ function Dashboard() {
                     </nav>
                 </div>
 
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-                    </div>
-                </header>
-
                 <main>
-                    <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                        
+                    <div className="mx-auto mt-10 max-w-7xl py-6 sm:px-6 lg:px-8">
+                        <SearchBar/>
                     </div>
                 </main>
             </div>
