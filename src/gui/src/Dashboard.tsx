@@ -53,8 +53,8 @@ function Dashboard() {
         <div className="shadow-xl">
           <nav className="bg-sky-300 h-20 shadow-lg">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 sha">
-              <div className="flex h-16 items-center justify-between">
-                <div className="flex items-center">
+              <div className="flex h-16 items-center justify-start">
+                <div className="flex items-center w-full">
                   <div className="flex-shrink-0">
                     <img
                       className="h-12 mt-5"
@@ -62,12 +62,12 @@ function Dashboard() {
                       alt="Searchify"
                     />
                   </div>
-                  <div className="mt-5">
-                    <div className="ml-10 flex items-baseline space-x-4 justify-end">
-                      <a className="bg-gray-700 hover:bg-gray-800 hover:cursor-pointer text-white rounded-lg px-3 py-2 text-sm font-medium" onClick={toggle}>Queries</a>
+                    <div className="ml-10 abs mr-auto mt-5 space-x-4 w-full">
+                      <div className=" float-end">
+                        <a className="bg-gray-700 hover:bg-gray-800 hover:cursor-pointer text-white rounded-lg px-3 py-2 ml-auto text-sm font-medium" onClick={toggle}>Queries</a>
+                      </div>
                       <Queries open={showQueries} setOpen={setShowQueries} queries={queries} searchFunction={handleSearch}/>
                     </div>
-                  </div>
                 </div>
               </div>
             </div>

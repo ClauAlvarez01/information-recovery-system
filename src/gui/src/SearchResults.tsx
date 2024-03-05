@@ -1,5 +1,5 @@
 import { Document, Metrics } from "./types/types";
-
+import { ChartBarSquareIcon } from "@heroicons/react/24/outline";
 interface Props {
   results: Document[];
   metrics: Metrics|undefined;
@@ -48,7 +48,13 @@ function SearchResults({ results, metrics }: Props) {
             ))}
           </div>
           {metrics && <div className="w-auto min-w-64 lg:mr-20 p-5 border h-full bg-gray-50 text-left rounded-xl">
-            <label className="text-3xl">Metrics:</label>
+            
+            <div className="flex items-center">
+              <div>
+                <ChartBarSquareIcon className="h-8 center"/>
+              </div>
+              <label className="text-3xl">Metrics:</label>
+            </div>
 
             <div className="mt-10">
                 <label className="text-lg shadow-sm">Precision:</label>
