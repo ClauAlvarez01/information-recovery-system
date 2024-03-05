@@ -14,11 +14,11 @@ function Dashboard() {
 
   const toggle = () => setShowQueries(!showQueries)
 
-  function handleSearch(newQuery=query){
+  function handleSearch(newQuery=query, id="-1"){
     // Make request
     console.log("Trim = " + newQuery.trim());
 
-    const request = { 'query': newQuery }
+    const request = { 'query': newQuery, 'id': id }
 
     if (newQuery.trim() !== '') {
       axios.get('http://localhost:8000/api/search/', {

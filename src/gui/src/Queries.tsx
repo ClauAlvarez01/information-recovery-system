@@ -10,15 +10,15 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   queries: Query[] | undefined;
-  searchFunction: (newQuery: string) => void;
+  searchFunction: (newQuery: string, id: string) => void;
 }
 
 export default function Queries({ open, setOpen, queries, searchFunction }: Props) {
   const cancelButtonRef = useRef(null);
 
-  function handleSearch(text: string): void {
+  function handleSearch(text: string, id: string): void {
     console.log(text);
-    searchFunction(text)
+    searchFunction(text, id)
     setOpen(false);
   }
 
@@ -87,7 +87,7 @@ export default function Queries({ open, setOpen, queries, searchFunction }: Prop
                                 />
                                 <button type="submit" className="text-white end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 ml-2">
                                     <MagnifyingGlassIcon
-                                      onClick={() => handleSearch(q.text)}
+                                      onClick={() => handleSearch(q.text, q.query_id)}
                                       className=" text-white h-6 w-5"
                                     />
                                 </button>
