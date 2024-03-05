@@ -35,7 +35,7 @@ class BooleanModel:
         Returns:
             list: List of documents that satisfy the given DNF query.
         """
-        conjunctive_clauses = re.findall(r'\((.*?)\)|(\w+)', query_dnf)
+        conjunctive_clauses = re.findall(r'\((.*?)\)|(\w+)', str(query_dnf))
         conjunctive_clauses = [re.split(
             r'\s*&\s*', clause[0]) if clause[0] else [clause[1]] for clause in conjunctive_clauses]
 

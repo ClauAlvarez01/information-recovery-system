@@ -234,10 +234,15 @@ def search(request):
         split_query = query.split()
 
         logical_query = ""
+        first = True
         for item in split_query:
             word = nlp(item)
             if item not in stop_words_english and item.isalpha():
-                logical_query += ' AND ' + word[0].lemma_
+                if first:
+                    logical_query += word[0].lemma_
+                    first = False
+                else:
+                    logical_query += ' AND ' + word[0].lemma_
 
         query_dnf = boolean_model.query_to_dnf(logical_query)
         docs_output_query_dnf = boolean_model.get_matching_docs(query_dnf)

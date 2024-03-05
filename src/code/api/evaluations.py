@@ -10,7 +10,7 @@ class Evaluation():
         self.relevant_not_recovered = []
         self.irrelevant_recovered = []
 
-        for element in trecQrel.items():
+        for element in trecQrel:
             if element['relevance'] >= 3:
                 self.relevant_docs.append(element['doc_id'])
             else:

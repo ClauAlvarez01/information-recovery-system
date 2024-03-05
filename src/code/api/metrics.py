@@ -6,6 +6,9 @@ class Metrics:
         self.fallout_value = self.fallout(irrelevant_recovered, irrelevant_docs)
 
     def precision(self, relevant_recovered, irrelevant_recovered):
+        print(len(relevant_recovered))
+        print(len(set(relevant_recovered).union(set(irrelevant_recovered))))
+
         return len(relevant_recovered)/ len(set(relevant_recovered).union(set(irrelevant_recovered)))
 
     def recall(self, relevant_recovered, relevant_not_recovered):
