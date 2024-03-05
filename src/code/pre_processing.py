@@ -8,7 +8,6 @@ sys.path.append(ruta_src)
 
 def load_corpus():
     dataset = ir_datasets.load("cranfield")
-    # documents = [doc.text for doc in dataset.docs_iter()]
     cranfieldDoc = {}
     documents = []
     for doc in dataset.docs_iter():
@@ -25,9 +24,14 @@ def load_corpus():
     
     trecQrel = {}
     for qrel in dataset.qrels_iter():
-        trecQrel[qrel[0]] = {'doc_id': qrel[1],
+        if qrel[0] in trecQrel:
+            trecQrel[qrel[0]].append({'doc_id': qrel[1],
                              'relevance': qrel[2], 
-                             'iteration': qrel[3]}
+                             'iteration': qrel[3]})
+        else:
+            trecQrel[qrel[0]] = [{'doc_id': qrel[1],
+                                'relevance': qrel[2], 
+                                'iteration': qrel[3]}]
 
     return cranfieldDoc, documents, genericQuery, trecQrel
 
@@ -77,20 +81,3 @@ class ProcessingData:
     # Construcción del vocabulario
     def build_vocabulary(self):
         return list(self.dictionary.token2id.keys())
-
-    # Representación vectorial de Docs
-    def vector_representation(self):
-        corpus = [self.dictionary.doc2bow(doc) for doc in self.tokenized_docs]
-
-        tfidf = gensim.models.TfidfModel(corpus)
-        vector_repr = [tfidf[doc] for doc in corpus]
-
-        return vector_repr
-
-    # #Etiquetado
-    # def pos_tagger_spacy(self):
-    #     return [[(token.text, token.tag_) for token in doc] for doc in self.tokenized_docs]
-    # def pos_tagger_spacy(tokenized_docs):
-    #     return [[(token.text, token.tag_) for token in doc] for doc in tokenized_docs]
-
-
