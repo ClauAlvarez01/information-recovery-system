@@ -10,13 +10,16 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   queries: Query[] | undefined;
+  searchFunction: (newQuery: string) => void;
 }
 
-export default function Queries({ open, setOpen, queries }: Props) {
+export default function Queries({ open, setOpen, queries, searchFunction }: Props) {
   const cancelButtonRef = useRef(null);
 
   function handleSearch(text: string): void {
     console.log(text);
+    searchFunction(text)
+    setOpen(false);
   }
 
   return (

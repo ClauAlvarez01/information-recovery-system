@@ -10,19 +10,32 @@ function Dashboard() {
   const [metrics, setMetrics] = useState<Metrics>();
   const [queries, setQueries] = useState<Query[]>();
   const [showQueries, setShowQueries] = useState(false)
+  const [query, setQuery] = useState("")
 
   const toggle = () => setShowQueries(!showQueries)
 
+  function handleSearch(newQuery=query){
+    // Make request
+    console.log("Trim = " + newQuery.trim());
+
+    const request = { 'query': newQuery }
+
+    if (newQuery.trim() !== '') {
+      axios.get('http://localhost:8000/api/test/', {
+        params: request
+      })
+        .then(response => {
+          setSearchResults(response.data.docs);
+          setMetrics(response.data.metrics);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/test/");
-        setSearchResults(response.data.docs);
-        setMetrics(response.data.metrics);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-
       try {
         const response = await axios.get("http://localhost:8000/api/queries/");
         setQueries(response.data.data);
@@ -52,7 +65,7 @@ function Dashboard() {
                   <div className="mt-5">
                     <div className="ml-10 flex items-baseline space-x-4 justify-end">
                       <a className="bg-gray-700 hover:bg-gray-800 hover:cursor-pointer text-white rounded-lg px-3 py-2 text-sm font-medium" onClick={toggle}>Queries</a>
-                      <Queries open={showQueries} setOpen={setShowQueries} queries={queries}/>
+                      <Queries open={showQueries} setOpen={setShowQueries} queries={queries} searchFunction={handleSearch}/>
                     </div>
                   </div>
                 </div>
@@ -63,7 +76,7 @@ function Dashboard() {
 
         <main>
           <div className="mx-auto mt-10 max-w-7xl py-6 sm:px-6 lg:px-8">
-            <SearchBar />
+            <SearchBar setQuery={setQuery} searchFunction={handleSearch}/>
           </div>
 
           <SearchResults results={searchResults} metrics={metrics} />
