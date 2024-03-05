@@ -13,6 +13,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 documents = {}
 vocabulary = {}
+queries = {}
 cranfield_docs = {}
 docs_per_token = {}
 
@@ -33,6 +34,10 @@ vocabulary_path = os.path.abspath(vocabulary_path)
 cranfield_docs_path = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), '..', '..', '..', 'data', 'cranfieldDoc.json')
 cranfield_docs_path = os.path.abspath(cranfield_docs_path)
+
+queries_path = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), '..', '..', '..', 'data', 'querys.json')
+queries_path = os.path.abspath(queries_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -50,6 +55,10 @@ vocabulary_values = vocabulary['vocabulary']
 
 with open(cranfield_docs_path, 'r') as cranfield_docs_file:
     cranfield_docs = json.load(cranfield_docs_file)
+
+with open(queries_path, 'r') as queries_file:
+    queries = json.load(queries_file)
+queries_values = queries['querys']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -68,21 +77,20 @@ matrix, lsa_model = lsi_model(documents_values, vectorizer)
 # http://localhost:8000/api/queries
 @api_view(['GET'])
 def queries(request):
-    queries = [
-        {
-            "query_id": "1",
-            "text": "Esto es una query"
-        },
-        {
-            "query_id": "2",
-            "text": "Otra consulta aquí"
-        },
-        {
-            "query_id": "3",
-            "text": "Y otra más"
-        }
-    ]
-    return Response({'data': queries})
+    data = []
+
+    print(len(queries_values.items()))
+    for query_id, text_list in queries_values.items():
+        text = text_list[0]
+        data.append({
+            "query_id": query_id,
+            "text": text
+        })
+
+
+    print(data)
+    print("se printeo la data")
+    return Response({'data': data})
 
 
 # http://localhost:8000/api/test
