@@ -20,9 +20,9 @@ for index, token in enumerate(processing_data.tokenized_docs):
     for item in token: 
         if item in documents_per_token:
             if not (index+1) in documents_per_token[item]:
-                documents_per_token[item].append(index+1)
+                documents_per_token[item].append(str(index+1))
         else:
-            documents_per_token[item] = [index+1]
+            documents_per_token[item] = [str(index+1)]
 
 
 def save_documents_to_json(text, json_file_name, file='data'):

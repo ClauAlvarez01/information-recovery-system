@@ -15,7 +15,7 @@ export interface Metrics{
 
 export interface Metric{
     boolean: string,
-    other: string
+    lsi: string
 }
 
 export interface Query{

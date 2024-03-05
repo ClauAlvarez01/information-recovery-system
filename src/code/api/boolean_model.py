@@ -62,7 +62,7 @@ class BooleanModel:
             if element.startswith("~"):
                 (end, docs) = self.trie.search(element[1:])
                 if end:
-                    set_docs = set(range(1, 1401))
+                    set_docs = set(str(range(1, 1401)))
                     difference_set = set_docs.difference(docs)
                     all_docs.append(list(difference_set))
                 else:

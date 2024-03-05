@@ -6,14 +6,21 @@ import os
 from api.trie import Trie
 from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
+from api.evaluations import Evaluation
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+import nltk
+from nltk.corpus import stopwords
+
+nltk.download('stopwords')
+stop_words_english = set(stopwords.words('english'))
 
 
 documents = {}
 vocabulary = {}
 queries = {}
+trecQrel = {}
 cranfield_docs = {}
 docs_per_token = {}
 
@@ -38,6 +45,10 @@ cranfield_docs_path = os.path.abspath(cranfield_docs_path)
 queries_path = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), '..', '..', '..', 'data', 'querys.json')
 queries_path = os.path.abspath(queries_path)
+
+trecQrel_path = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), '..', '..', '..', 'data', 'trecQrel.json')
+trecQrel_path = os.path.abspath(trecQrel_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -59,6 +70,10 @@ with open(cranfield_docs_path, 'r') as cranfield_docs_file:
 with open(queries_path, 'r') as queries_file:
     queries = json.load(queries_file)
 queries_values = queries['querys']
+
+with open(trecQrel_path, 'r') as trecQrel_file:
+    trecQrel = json.load(trecQrel_file)
+trecQrel_values = trecQrel['trecQrel']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -189,6 +204,7 @@ def test(request):
 @api_view(['GET'])
 def search(request):
     query = request.GET.get('query', '')
+    id = request.GET.get('id', '')
     query = query.lower()
 
     query_vector = vectorizer.transform([query])
@@ -199,30 +215,52 @@ def search(request):
     similar_indexes = [i+1 for i in similar_indexes]
 
     docs = []
-    cranfield_docs_values = list(cranfield_docs['cranfieldDoc'].values())
+    cranfield_docs_values = cranfield_docs['cranfieldDoc']
 
     for i in similar_indexes:
         docs.append(cranfield_docs_values[i])
 
+    if id != '-1':
+        positive_similarity_indexes = [i+1 for i, sim in enumerate(similarity[0]) if sim>0]
+        recovered_docs = []
+        for i in positive_similarity_indexes:
+            recovered_docs.append(cranfield_docs_values[i]['doc_id'])
 
-    # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
-    metrics = {
-        'precision': {
-            'boolean': '0.57',
-            'other': '0.90'
-        },
-        'recovered': {
-            'boolean': '0.20',
-            'other': '0.46'
-        },
-        'f1': {
-            'boolean': '0.39',
-            'other': '0.49'
-        },
-        'fallout': {
-            'boolean': '0.31',
-            'other': '0.41'
+        evaluation_lsi_model = Evaluation(trecQrel_values[id], recovered_docs)
+        lsi_precision, lsi_recall, lsi_f1, lsi_fallout = evaluation_lsi_model.apply_metrics()
+
+        split_query = query.split()
+
+        logical_query = ""
+        for item in split_query:
+            word = nlp(item)
+            if item not in stop_words_english and item.isalpha():
+                logical_query += ' AND ' + word[0].lemma_
+        
+        query_dnf = boolean_model.query_to_dnf(logical_query)
+        docs_output_query_dnf = boolean_model.get_matching_docs(query_dnf)
+        
+        evaluation_boolean_model = Evaluation(trecQrel_values[id], docs_output_query_dnf)
+        boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
+
+        # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
+        metrics = {
+            'precision': {
+                'boolean': boolean_precision,
+                'lsi': lsi_precision
+            },
+            'recovered': {
+                'boolean': boolean_recall,
+                'lsi': lsi_recall
+            },
+            'f1': {
+                'boolean': boolean_f1,
+                'lsi': lsi_f1
+            },
+            'fallout': {
+                'boolean': boolean_fallout,
+                'lsi': lsi_fallout
+            }
         }
-    }
 
     return Response({'docs': docs, 'metrics': metrics})
