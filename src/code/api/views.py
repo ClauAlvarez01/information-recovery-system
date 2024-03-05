@@ -87,9 +87,6 @@ def queries(request):
             "text": text
         })
 
-
-    print(data)
-    print("se printeo la data")
     return Response({'data': data})
 
 
