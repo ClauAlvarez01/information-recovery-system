@@ -71,6 +71,12 @@ function SearchResults({ results, metrics }: Props) {
                 <p className="font-mono">Other: {metrics.f1.other}</p>
             </div>
 
+            <div className="mt-5">
+                <label className="text-lg shadow-sm">Fallout:</label>
+                <p className="font-mono">Boolean: {metrics.fallout.boolean}</p>
+                <p className="font-mono">Other: {metrics.fallout.other}</p>
+            </div>
+
           </div>}
         </div>
       )}

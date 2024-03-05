@@ -10,6 +10,7 @@ export interface Metrics{
     precision: Metric
     recovered: Metric
     f1: Metric
+    fallout: Metric
 }
 
 export interface Metric{

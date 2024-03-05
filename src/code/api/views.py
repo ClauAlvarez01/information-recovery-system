@@ -90,6 +90,10 @@ def test(request):
         'f1': {
             'boolean': '0.39',
             'other': '0.49'
+        },
+        'fallout': {
+            'boolean': '0.31',
+            'other': '0.41'
         }
     }
 
