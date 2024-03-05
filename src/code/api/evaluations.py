@@ -1,4 +1,4 @@
-from metrics import Metrics
+from api.metrics import Metrics
 
 class Evaluation():
     def __init__(self, trecQrel ,recovered_documents):

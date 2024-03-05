@@ -201,10 +201,11 @@ def test(request):
 
     return Response({'docs': docs, 'metrics': metrics})
 
+
 @api_view(['GET'])
 def search(request):
     query = request.GET.get('query', '')
-    id = request.GET.get('id', '')
+    id = request.GET.get('id', '-1')
     query = query.lower()
 
     query_vector = vectorizer.transform([query])
@@ -218,13 +219,14 @@ def search(request):
     cranfield_docs_values = cranfield_docs['cranfieldDoc']
 
     for i in similar_indexes:
-        docs.append(cranfield_docs_values[i])
+        docs.append(cranfield_docs_values[str(i)])
 
     if id != '-1':
-        positive_similarity_indexes = [i+1 for i, sim in enumerate(similarity[0]) if sim>0]
+        positive_similarity_indexes = [
+            i+1 for i, sim in enumerate(similarity[0]) if sim > 0]
         recovered_docs = []
         for i in positive_similarity_indexes:
-            recovered_docs.append(cranfield_docs_values[i]['doc_id'])
+            recovered_docs.append(cranfield_docs_values[str(i)]['doc_id'])
 
         evaluation_lsi_model = Evaluation(trecQrel_values[id], recovered_docs)
         lsi_precision, lsi_recall, lsi_f1, lsi_fallout = evaluation_lsi_model.apply_metrics()
@@ -236,11 +238,12 @@ def search(request):
             word = nlp(item)
             if item not in stop_words_english and item.isalpha():
                 logical_query += ' AND ' + word[0].lemma_
-        
+
         query_dnf = boolean_model.query_to_dnf(logical_query)
         docs_output_query_dnf = boolean_model.get_matching_docs(query_dnf)
-        
-        evaluation_boolean_model = Evaluation(trecQrel_values[id], docs_output_query_dnf)
+
+        evaluation_boolean_model = Evaluation(
+            trecQrel_values[id], docs_output_query_dnf)
         boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
 
         # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
@@ -262,5 +265,7 @@ def search(request):
                 'lsi': lsi_fallout
             }
         }
+    else:
+        metrics = {}
 
     return Response({'docs': docs, 'metrics': metrics})
