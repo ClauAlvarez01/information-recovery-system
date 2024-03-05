@@ -10,7 +10,10 @@ nlp_instance=spacy.load("en_core_web_sm")
 
 processing_data = ProcessingData(nlp_instance)
 
+cranfieldDoc = processing_data.cranfieldDoc 
 documents = {i + 1: doc for i, doc in enumerate(processing_data.documents)}
+querys = processing_data.querys
+trecQrel = processing_data.trecQrel
 
 documents_per_token = {}
 for index, token in enumerate(processing_data.tokenized_docs):
@@ -21,7 +24,7 @@ for index, token in enumerate(processing_data.tokenized_docs):
         else:
             documents_per_token[item] = [index+1]
 
- 
+
 def save_documents_to_json(text, json_file_name, file='data'):
         json_path = os.path.join(file, json_file_name)
         file_name = json_file_name.split('.')
@@ -35,5 +38,20 @@ def save_documents_to_json(text, json_file_name, file='data'):
         except Exception as e:
             print(f"Error al exportar a JSON: {e}")
 
+serialized_dict = {
+        'token2id': processing_data.dictionary.token2id,
+        'id2token': processing_data.dictionary.id2token,
+        'dfs': processing_data.dictionary.dfs,
+        'num_docs': processing_data.dictionary.num_docs,
+        'num_pos': processing_data.dictionary.num_pos
+    }
+
 save_documents_to_json(documents, 'documents.json', file='data')
 save_documents_to_json(documents_per_token, 'docs_per_token.json', file='data')
+save_documents_to_json(processing_data.tokenized_docs, 'tokenized_docs.json', file='data')
+save_documents_to_json(cranfieldDoc, 'cranfieldDoc.json', file='data')
+save_documents_to_json(querys, 'querys.json', file='data')
+save_documents_to_json(trecQrel, 'trecQrel.json', file='data')
+save_documents_to_json(processing_data.vector_repr, 'vector_repr.json', file ='data')
+save_documents_to_json(serialized_dict, 'dictionary.json', file='data')
+save_documents_to_json(processing_data.vocabulary, 'vocabulary.json', file='data')
