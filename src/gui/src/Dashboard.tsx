@@ -21,7 +21,7 @@ function Dashboard() {
     const request = { 'query': newQuery }
 
     if (newQuery.trim() !== '') {
-      axios.get('http://localhost:8000/api/test/', {
+      axios.get('http://localhost:8000/api/search/', {
         params: request
       })
         .then(response => {

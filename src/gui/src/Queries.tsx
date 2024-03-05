@@ -71,7 +71,7 @@ export default function Queries({ open, setOpen, queries, searchFunction }: Prop
                       </Dialog.Title>
 
                       <div className="mt-2">
-                        <div className="w-full">
+                        <div className="w-full overflow-y-scroll h-80">
                           {queries &&
                             queries.map((q) => (
                               <div
