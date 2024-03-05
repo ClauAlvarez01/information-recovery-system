@@ -1,2 +1,9 @@
 /src/code/db.sqlite3
 /src/code/engine/__pycache__
+data/cranfieldDoc.json
+data/docs_per_token.json
+data/documents.json
+data/querys.json
+data/tokenized_docs.json
+data/trecQrel.json
+data/vocabulary.json

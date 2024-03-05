@@ -183,7 +183,8 @@ def test(request):
 
 @api_view(['GET'])
 def search(request):
-    query = "material properties of photoelastic materials ."
+    query = request.GET.get('query', '')
+    query = query.lower()
 
     query_vector = vectorizer.transform([query])
     semantic_query = lsa_model.transform(query_vector)
@@ -198,6 +199,8 @@ def search(request):
     for i in similar_indexes:
         docs.append(cranfield_docs_values[i])
 
+
+    # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
     metrics = {
         'precision': {
             'boolean': '0.57',
