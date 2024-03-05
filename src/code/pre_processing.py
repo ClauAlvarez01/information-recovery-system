@@ -45,7 +45,6 @@ class ProcessingData:
         self.tokenized_docs = self.filter_tokens_by_occurrence(
             self.tokenized_docs, self.dictionary)
         self.vocabulary = self.build_vocabulary()
-        self.vector_repr = self.vector_representation()
 
     def process_documents(self, documents):
         tokenized_docs = self.tokenization_spacy(documents)
