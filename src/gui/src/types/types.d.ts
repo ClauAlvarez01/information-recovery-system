@@ -17,3 +17,8 @@ export interface Metric{
     boolean: string,
     other: string
 }
+
+export interface Query{
+    query_id: string,
+    text: string
+}

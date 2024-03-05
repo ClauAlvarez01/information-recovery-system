@@ -2,6 +2,26 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+# http://localhost:8000/api/queries
+@api_view(['GET'])
+def queries(request):
+    queries = [
+        {
+            "query_id": "1",
+            "text": "Esto es una query"
+        },
+        {
+            "query_id": "2",
+            "text": "Otra consulta aquí"
+        },
+        {
+            "query_id": "3",
+            "text": "Y otra más"
+        }
+    ]
+    return Response({'data': queries})
+
+
 # http://localhost:8000/api/test
 @api_view(['GET'])
 def test(request):
