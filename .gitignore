@@ -1,1 +1,3 @@
 /src/code/db.sqlite3
+/data
+/src/code/engine/__pycache__

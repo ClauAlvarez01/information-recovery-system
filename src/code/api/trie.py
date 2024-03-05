@@ -6,29 +6,23 @@ class TrieNode:
 
 
 class Trie:
-    def __init__(self, tokenized_docs):
+    def __init__(self, docs_per_token):
         self.root = TrieNode()
-        self.tokenized_docs = tokenized_docs
+        self.docs_per_token = docs_per_token
+        self.build_trie()
 
-    def build_trie(self, words):
-        for word in words:
-            self.insert(word)
+    def build_trie(self):
+        for word, elements in self.docs_per_token.items():
+            self.insert(word, elements)
 
-    def insert(self, word):
+    def insert(self, word, elements):
         node = self.root
         for char in word:
             if char not in node.children:
                 node.children[char] = TrieNode()
             node = node.children[char]
         node.end = True
-        node.documents = self.get_docs_for_token(word)
-
-    def get_docs_for_token(self, token):
-        documents = set()
-        for i, doc in enumerate(self.tokenized_docs):
-            if token in doc:
-                documents.add(i+1)
-        return documents
+        node.documents = elements
     
     def search(self, word):
         node = self.root
