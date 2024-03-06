@@ -6,14 +6,21 @@ import os
 from api.trie import Trie
 from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
+from api.evaluations import Evaluation
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+import nltk
+from nltk.corpus import stopwords
+
+nltk.download('stopwords')
+stop_words_english = set(stopwords.words('english'))
 
 
 documents = {}
 vocabulary = {}
 queries = {}
+trecQrel = {}
 cranfield_docs = {}
 docs_per_token = {}
 
@@ -38,12 +45,17 @@ cranfield_docs_path = os.path.abspath(cranfield_docs_path)
 queries_path = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), '..', '..', '..', 'data', 'querys.json')
 queries_path = os.path.abspath(queries_path)
+
+trecQrel_path = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), '..', '..', '..', 'data', 'trecQrel.json')
+trecQrel_path = os.path.abspath(trecQrel_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ Load jsons ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 with open(docs_per_token_path, 'r') as docs_per_token_file:
     docs_per_token = json.load(docs_per_token_file)
+docs_per_token_values = docs_per_token['docs_per_token']
 
 with open(documents_path, 'r') as documents_file:
     documents = json.load(documents_file)
@@ -59,13 +71,17 @@ with open(cranfield_docs_path, 'r') as cranfield_docs_file:
 with open(queries_path, 'r') as queries_file:
     queries = json.load(queries_file)
 queries_values = queries['querys']
+
+with open(trecQrel_path, 'r') as trecQrel_file:
+    trecQrel = json.load(trecQrel_file)
+trecQrel_values = trecQrel['trecQrel']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Models ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 nlp = spacy.load("en_core_web_sm")
 
-trie = Trie(docs_per_token['docs_per_token'])
+trie = Trie(docs_per_token_values)
 boolean_model = BooleanModel(nlp, trie)
 
 
@@ -186,9 +202,11 @@ def test(request):
 
     return Response({'docs': docs, 'metrics': metrics})
 
+
 @api_view(['GET'])
 def search(request):
     query = request.GET.get('query', '')
+    id = request.GET.get('id', '-1')
     query = query.lower()
 
     query_vector = vectorizer.transform([query])
@@ -199,30 +217,70 @@ def search(request):
     similar_indexes = [i+1 for i in similar_indexes]
 
     docs = []
-    cranfield_docs_values = list(cranfield_docs['cranfieldDoc'].values())
+    cranfield_docs_values = cranfield_docs['cranfieldDoc']
 
     for i in similar_indexes:
-        docs.append(cranfield_docs_values[i])
+        docs.append(cranfield_docs_values[str(i)])
 
+    if id != '-1' and id in trecQrel_values:
+        positive_similarity_indexes = [
+            i+1 for i, sim in enumerate(similarity[0]) if sim > 0]
+        recovered_docs = []
+        for i in positive_similarity_indexes:
+            recovered_docs.append(cranfield_docs_values[str(i)]['doc_id'])
 
-    # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
-    metrics = {
-        'precision': {
-            'boolean': '0.57',
-            'other': '0.90'
-        },
-        'recovered': {
-            'boolean': '0.20',
-            'other': '0.46'
-        },
-        'f1': {
-            'boolean': '0.39',
-            'other': '0.49'
-        },
-        'fallout': {
-            'boolean': '0.31',
-            'other': '0.41'
+        evaluation_lsi_model = Evaluation(trecQrel_values[id], recovered_docs)
+        lsi_precision, lsi_recall, lsi_f1, lsi_fallout = evaluation_lsi_model.apply_metrics()
+        if lsi_precision == -1:
+            lsi_precision = "NaN"
+        if lsi_recall == -1:
+            lsi_recall = "NaN"
+        if lsi_f1 == -1:
+            lsi_f1 = "NaN"
+        if lsi_fallout == -1:
+            lsi_fallout = "NaN"
+
+        split_query = query.split()
+
+        logical_query = ""
+        first = True
+        for item in split_query:
+            word = nlp(item)
+            if item not in stop_words_english and item.isalpha():
+                if first:
+                    logical_query += word[0].lemma_
+                    first = False
+                else:
+                    logical_query += ' AND ' + word[0].lemma_
+
+        docs_output_query_dnf = boolean_model.get_matching_docs(logical_query)
+
+        if len(docs_output_query_dnf) != 0:
+            evaluation_boolean_model = Evaluation(
+                trecQrel_values[id], docs_output_query_dnf)
+            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
+        else:
+            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = "NaN", "NaN", "NaN", "NaN"
+        
+        metrics = {
+            'precision': {
+                'boolean': boolean_precision,
+                'lsi': lsi_precision
+            },
+            'recovered': {
+                'boolean': boolean_recall,
+                'lsi': lsi_recall
+            },
+            'f1': {
+                'boolean': boolean_f1,
+                'lsi': lsi_f1
+            },
+            'fallout': {
+                'boolean': boolean_fallout,
+                'lsi': lsi_fallout
+            }
         }
-    }
+    else:
+        metrics = {}
 
     return Response({'docs': docs, 'metrics': metrics})

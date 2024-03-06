@@ -14,11 +14,11 @@ function Dashboard() {
 
   const toggle = () => setShowQueries(!showQueries)
 
-  function handleSearch(newQuery=query){
+  function handleSearch(newQuery=query, id="-1"){
     // Make request
     console.log("Trim = " + newQuery.trim());
 
-    const request = { 'query': newQuery }
+    const request = { 'query': newQuery, 'id': id }
 
     if (newQuery.trim() !== '') {
       axios.get('http://localhost:8000/api/search/', {
@@ -27,6 +27,11 @@ function Dashboard() {
         .then(response => {
           setSearchResults(response.data.docs);
           setMetrics(response.data.metrics);
+          try {
+            response.data.metrics.precision.boolean
+          } catch (error) {
+            setMetrics(undefined)
+          }
         })
         .catch(error => {
           console.error(error);
