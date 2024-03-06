@@ -21,7 +21,7 @@ class BooleanModel:
         processed_query = ' '.join(tokens).replace("and", "&").replace("or", "|").replace("not", "~")
 
         query_expr = sympify(processed_query, evaluate=False)
-        query_dnf = to_dnf(query_expr, simplify=True)
+        query_dnf = to_dnf(query_expr, simplify=True, force=True)
 
         return query_dnf
 
@@ -35,16 +35,20 @@ class BooleanModel:
         Returns:
             list: List of documents that satisfy the given DNF query.
         """
-        conjunctive_clauses = re.findall(r'\((.*?)\)|(\w+)', str(query_dnf))
-        conjunctive_clauses = [re.split(
-            r'\s*&\s*', clause[0]) if clause[0] else [clause[1]] for clause in conjunctive_clauses]
+        conjunctive_clauses = re.findall(r'\((.*?)\)|(\w+)|(\w+\s*\|\s*\w+)', str(query_dnf)) 
+        conjunctive_clauses = [ 
+            re.split(r'\s*&\s*', clause[0]) if clause[0] else 
+            re.split(r'\s*\|\s*', clause[2]) if clause[2] else 
+            [clause[1]] 
+            for clause in conjunctive_clauses 
+        ]
 
         matching_documents = []
 
         for clause in conjunctive_clauses:
             matching_documents.append(self.get_documents(clause))
 
-        union_matching_docs = set().union(*matching_documents)
+        union_matching_docs = set().intersection(*matching_documents)
         return (list(union_matching_docs))
 
     def get_documents(self, clause):

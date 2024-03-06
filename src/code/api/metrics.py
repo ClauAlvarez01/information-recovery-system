@@ -8,14 +8,33 @@ class Metrics:
     def precision(self, relevant_recovered, irrelevant_recovered):
         print(len(relevant_recovered))
         print(len(set(relevant_recovered).union(set(irrelevant_recovered))))
-
-        return len(relevant_recovered)/ len(set(relevant_recovered).union(set(irrelevant_recovered)))
+        response = -1
+        try:
+            response = len(relevant_recovered)/ len(set(relevant_recovered).union(set(irrelevant_recovered)))
+        except:
+            pass
+        return response 
 
     def recall(self, relevant_recovered, relevant_not_recovered):
-        return len(relevant_recovered)/ len(set(relevant_recovered).union(set(relevant_not_recovered)))
+        response = -1
+        try:
+            response = len(relevant_recovered)/ len(set(relevant_recovered).union(set(relevant_not_recovered)))
+        except:
+            pass
+        return response
     
     def f1(self):
-        return ((2*self.precision_value*self.recall_value)/ (self.precision_value+self.recall_value))
+        response = -1
+        try:
+            response = ((2*self.precision_value*self.recall_value)/ (self.precision_value+self.recall_value))
+        except:
+            pass
+        return response
     
     def fallout(self, irrelevant_recovered, irrelevant_docs):
-        return len(irrelevant_recovered)/ len(irrelevant_docs) 
+        response = -1
+        try:
+            response = len(irrelevant_recovered)/ len(irrelevant_docs)
+        except:
+            pass
+        return response

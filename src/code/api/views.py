@@ -55,6 +55,7 @@ trecQrel_path = os.path.abspath(trecQrel_path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~ Load jsons ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 with open(docs_per_token_path, 'r') as docs_per_token_file:
     docs_per_token = json.load(docs_per_token_file)
+docs_per_token_values = docs_per_token['docs_per_token']
 
 with open(documents_path, 'r') as documents_file:
     documents = json.load(documents_file)
@@ -80,7 +81,7 @@ trecQrel_values = trecQrel['trecQrel']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Models ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 nlp = spacy.load("en_core_web_sm")
 
-trie = Trie(docs_per_token['docs_per_token'])
+trie = Trie(docs_per_token_values)
 boolean_model = BooleanModel(nlp, trie)
 
 
@@ -221,7 +222,7 @@ def search(request):
     for i in similar_indexes:
         docs.append(cranfield_docs_values[str(i)])
 
-    if id != '-1':
+    if id != '-1' and id in trecQrel_values:
         positive_similarity_indexes = [
             i+1 for i, sim in enumerate(similarity[0]) if sim > 0]
         recovered_docs = []
@@ -230,6 +231,14 @@ def search(request):
 
         evaluation_lsi_model = Evaluation(trecQrel_values[id], recovered_docs)
         lsi_precision, lsi_recall, lsi_f1, lsi_fallout = evaluation_lsi_model.apply_metrics()
+        if lsi_precision == -1:
+            lsi_precision = "NaN"
+        if lsi_recall == -1:
+            lsi_recall = "NaN"
+        if lsi_f1 == -1:
+            lsi_f1 = "NaN"
+        if lsi_fallout == -1:
+            lsi_fallout = "NaN"
 
         split_query = query.split()
 
@@ -244,14 +253,15 @@ def search(request):
                 else:
                     logical_query += ' AND ' + word[0].lemma_
 
-        query_dnf = boolean_model.query_to_dnf(logical_query)
-        docs_output_query_dnf = boolean_model.get_matching_docs(query_dnf)
+        docs_output_query_dnf = boolean_model.get_matching_docs(logical_query)
 
-        evaluation_boolean_model = Evaluation(
-            trecQrel_values[id], docs_output_query_dnf)
-        boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
-
-        # 🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨
+        if len(docs_output_query_dnf) != 0:
+            evaluation_boolean_model = Evaluation(
+                trecQrel_values[id], docs_output_query_dnf)
+            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
+        else:
+            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = "NaN", "NaN", "NaN", "NaN"
+        
         metrics = {
             'precision': {
                 'boolean': boolean_precision,
