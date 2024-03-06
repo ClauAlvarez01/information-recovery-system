@@ -24,18 +24,18 @@ function Dashboard() {
       axios.get('http://localhost:8000/api/search/', {
         params: request
       })
-        .then(response => {
-          setSearchResults(response.data.docs);
-          setMetrics(response.data.metrics);
-          try {
-            response.data.metrics.precision.boolean
-          } catch (error) {
-            setMetrics(undefined)
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      .then(response => {
+        setSearchResults(response.data.docs);
+        setMetrics(response.data.metrics);
+        try {
+          response.data.metrics.precision.boolean
+        } catch (error) {
+          setMetrics(undefined)
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
     }
   }
 

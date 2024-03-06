@@ -206,6 +206,7 @@ def test(request):
 @api_view(['GET'])
 def search(request):
     query = request.GET.get('query', '')
+    print(f"request: {query}")
     id = request.GET.get('id', '-1')
     query = query.lower()
 
@@ -283,4 +284,5 @@ def search(request):
     else:
         metrics = {}
 
+    print(f"len(docs): {len(docs)}")
     return Response({'docs': docs, 'metrics': metrics})
