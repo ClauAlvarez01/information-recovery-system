@@ -85,9 +85,8 @@ export default function Queries({ open, setOpen, queries, searchFunction }: Prop
                                   value={q.text}
                                   readOnly
                                 />
-                                <button type="submit" className="text-white end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 ml-2">
+                                <button type="submit" className="text-white end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 ml-2" onClick={() => handleSearch(q.text, q.query_id)}>
                                     <MagnifyingGlassIcon
-                                      onClick={() => handleSearch(q.text, q.query_id)}
                                       className=" text-white h-6 w-5"
                                     />
                                 </button>
