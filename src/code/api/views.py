@@ -93,6 +93,16 @@ matrix, lsa_model = lsi_model(documents_values, vectorizer)
 # http://localhost:8000/api/queries
 @api_view(['GET'])
 def queries(request):
+    """
+    View for retrieving a list of queries along with their corresponding IDs.
+
+    Parameters:
+    - request (HttpRequest): The GET request object.
+
+    Returns:
+    - Response: A JSON response containing a list of query objects, each with 'query_id' and 'text' fields.
+    """
+    
     data = []
 
     print(len(queries_values.items()))
@@ -205,6 +215,16 @@ def test(request):
 
 @api_view(['GET'])
 def search(request):
+    """
+    View for performing a semantic search based on a query and calculating evaluation metrics if a relevant ID is provided.
+
+    Parameters:
+    - request (HttpRequest): The GET request object containing query parameters.
+
+    Returns:
+    - Response: A JSON response containing a list of similar documents and, if a relevant ID is provided, evaluation metrics.
+    """
+
     query = request.GET.get('query', '')
     print(f"request: {query}")
     id = request.GET.get('id', '-1')
@@ -284,5 +304,4 @@ def search(request):
     else:
         metrics = {}
 
-    print(f"len(docs): {len(docs)}")
     return Response({'docs': docs, 'metrics': metrics})
