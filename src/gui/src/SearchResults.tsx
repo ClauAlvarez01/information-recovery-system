@@ -63,7 +63,7 @@ function SearchResults({ results, metrics }: Props) {
             </div>
             
             <div className="mt-5">
-                <label className="text-lg shadow-sm">Recovered:</label>
+                <label className="text-lg shadow-sm">Recall:</label>
                 <p className="font-mono">Boolean: {metrics.recovered.boolean}</p>
                 <p className="font-mono">LSI: {metrics.recovered.lsi}</p>
             </div>
