@@ -10,11 +10,6 @@ from api.evaluations import Evaluation
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-import nltk
-from nltk.corpus import stopwords
-
-nltk.download('stopwords')
-stop_words_english = set(stopwords.words('english'))
 
 
 documents = {}
@@ -261,28 +256,25 @@ def search(request):
         if lsi_fallout == -1:
             lsi_fallout = "NaN"
 
-        split_query = query.split()
+        query_tokens = nlp(query)
+        finally_query = ' ' .join([str(token) for token in query_tokens if token.lemma_.lower() in vocabulary_values])
 
-        logical_query = ""
-        first = True
-        for item in split_query:
-            word = nlp(item)
-            if item not in stop_words_english and item.isalpha():
-                if first:
-                    logical_query += word[0].lemma_
-                    first = False
-                else:
-                    logical_query += ' AND ' + word[0].lemma_
+        query_dnf = boolean_model.query_to_dnf(finally_query)
 
-        docs_output_query_dnf = boolean_model.get_matching_docs(logical_query)
+        docs_output_query_dnf = boolean_model.get_matching_docs(query_dnf)
 
-        if len(docs_output_query_dnf) != 0:
-            evaluation_boolean_model = Evaluation(
-                trecQrel_values[id], docs_output_query_dnf)
-            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
-        else:
-            boolean_precision, boolean_recall, boolean_f1, boolean_fallout = "NaN", "NaN", "NaN", "NaN"
-        
+        evaluation_boolean_model = Evaluation(
+            trecQrel_values[id], docs_output_query_dnf)
+        boolean_precision, boolean_recall, boolean_f1, boolean_fallout = evaluation_boolean_model.apply_metrics()
+        if boolean_precision == -1:
+            boolean_precision = "NaN"
+        if boolean_recall == -1:
+            boolean_recall = "NaN"
+        if boolean_f1 == -1:
+            boolean_f1 = "NaN"
+        if boolean_fallout == -1:
+            boolean_fallout = "NaN"
+
         metrics = {
             'precision': {
                 'boolean': boolean_precision,

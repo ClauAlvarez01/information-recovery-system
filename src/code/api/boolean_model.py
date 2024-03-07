@@ -1,5 +1,11 @@
 import re
-from sympy import sympify, to_dnf
+from sympy import And, symbols, sympify, to_dnf
+import nltk
+from nltk.corpus import stopwords
+
+nltk.download('stopwords')
+stop_words_english = set(stopwords.words('english'))
+
 
 class BooleanModel:
     def __init__(self, nlp, trie):
@@ -16,12 +22,20 @@ class BooleanModel:
         Return:
             query_dnf(str): Query expressed in normal disjunctive form.
         """
-        tokens = [token.lemma_.lower() for token in self.nlp(query) if token.is_alpha or token.text == ")" or token.text == "("]
+        tokens = [token.lemma_.lower() for token in self.nlp(query) if (token.text.lower() not in stop_words_english and token.is_alpha) or token.text == ")" or token.text == "("]
 
-        processed_query = ' '.join(tokens).replace("and", "&").replace("or", "|").replace("not", "~")
+        # processed_query = ' '.join(tokens).replace("and", "&").replace("or", "|").replace("not", "~")
 
-        query_expr = sympify(processed_query, evaluate=False)
-        query_dnf = to_dnf(query_expr, simplify=True, force=True)
+        try:
+            processed_query = ' & ' .join(tokens)
+            query_expr = sympify(processed_query, evaluate=False)
+        except:
+            processed_query = ' ' .join(tokens)
+            elements = symbols(processed_query)
+            query_expr = And(*elements)
+            query_expr = sympify(query_expr, evaluate=False)
+
+        query_dnf = to_dnf(query_expr, force=True)
 
         return query_dnf
 
@@ -48,8 +62,8 @@ class BooleanModel:
         for clause in conjunctive_clauses:
             matching_documents.append(self.get_documents(clause))
 
-        union_matching_docs = set().intersection(*matching_documents)
-        return (list(union_matching_docs))
+        intersection_matching_docs = set(matching_documents[0]).intersection(*matching_documents[1:])
+        return (list(intersection_matching_docs))
 
     def get_documents(self, clause):
         """
@@ -62,11 +76,11 @@ class BooleanModel:
             list: List of documents that satisfy the given logical clause.
         """
         all_docs = []
+        set_docs = set(str(range(1, 1401)))
         for element in clause:
             if element.startswith("~"):
                 (end, docs) = self.trie.search(element[1:])
                 if end:
-                    set_docs = set(str(range(1, 1401)))
                     difference_set = set_docs.difference(docs)
                     all_docs.append(list(difference_set))
                 else:
