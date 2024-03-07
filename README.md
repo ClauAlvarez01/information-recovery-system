@@ -80,7 +80,8 @@ Las métricas utilizadas para la comparación entre los modelos fueron:
 
 Donde: $R$ representa los documentos recuperados, $R_R$ los documentos recuperados que son relevantes, $N_R$ los no recuperados relevantes, $I$ los irrelevantes y $R_I$ los recuperados irrelevantes. 
 
-
+Además, hemos incorporado una estrategia de expansión de consulta basada en sinónimos obtenidos a través de WordNet y NLTK. Esta estrategia busca mitigar las limitaciones de la coincidencia exacta de palabras, proporcionando una mayor capacidad para capturar la diversidad de términos relacionados con los conceptos de interés.
+Esta estrategia solo es utilizada en consultas propias del usuario y no en las consultas ya predefinidas. A pesar de que el modelo LSI ya aborda la similitud conceptual entre documentos y consultas al mapearlos en un espacio dimensional reducido, la inclusión de sinónimos adicionales mediante la expansión de consulta contribuye a enriquecer aún más la representación semántica. Este enfoque conjunto busca mejorar la precisión y exhaustividad de la recuperación de información al considerar tanto las relaciones semánticas latentes como las asociaciones léxicas más amplias.
 
 ## Consideraciones iniciales:
 
@@ -94,6 +95,7 @@ En la barra de navegación se muestra un botón para acceder a las consultas que
 
 ## Insuficiencias y mejoras:
 
-Debido a la propia naturaleza del modelo booleano, hemos asumido que cuando una consulta en lenguaje natural, es procesada por este modelo, solo serán recuperados aquellos documentos en los que aparezcan todas las palabras de la consulta. Esto trae como consecuencia que al evaluar los resultados de búsqueda para dicho modelo, no se obtengan valores para las métricas, pues estas fracciones tienden a indefinirse ya que en la mayoría de los casos no se obtienen documentos recuperados.
+Debido a la propia naturaleza del modelo booleano, hemos asumido que cuando una consulta en lenguaje natural, es procesada por este modelo, solo serán recuperados aquellos documentos en los que aparezcan todas las palabras de la consulta. Esto trae como consecuencia que al evaluar los resultados de búsqueda para dicho modelo, no se obtengan valores para las métricas, pues estas fracciones tienden a indefinirse ya que en la mayoría de los casos no se obtienen documentos recuperados. Para una mejor obtención de resultados sería una buena idea aplicar la expansión de consulta; esto permite flexibilizar la rigidez del modelo y ampliar la capacidad de capturar documentos relevantes que, de otra manera, podrían pasar desapercibidos debido a diferencias exactas en la elección de palabras.
 
 Permitir mostrar resultados de la recuperación de información utilizando el modelo booleano.
+
