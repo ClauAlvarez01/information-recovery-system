@@ -7,6 +7,7 @@ from api.trie import Trie
 from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
 from api.evaluations import Evaluation
+from api.query_extension import get_query_expand
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -225,8 +226,14 @@ def search(request):
     id = request.GET.get('id', '-1')
     query = query.lower()
 
-    query_vector = vectorizer.transform([query])
-    semantic_query = lsa_model.transform(query_vector)
+    if id==-1:
+        query_expand = get_query_expand(query)
+        query_vector = vectorizer.transform([query_expand])
+        semantic_query = lsa_model.transform(query_vector)
+    else:
+        query_vector = vectorizer.transform([query])
+        semantic_query = lsa_model.transform(query_vector)
+
 
     similarity = cosine_similarity(semantic_query, matrix)
     similar_indexes = similarity.argsort()[0][-10:][::-1]
