@@ -7,7 +7,7 @@ from api.trie import Trie
 from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
 from api.evaluations import Evaluation
-from api.query_extension import get_query_expand
+from api.query_expansion import get_query_expand
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
