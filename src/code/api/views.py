@@ -7,7 +7,8 @@ from api.trie import Trie
 from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
 from api.evaluations import Evaluation
-from api.query_expansion import get_query_expand
+from api.query_processing import get_tokenized_query
+from api.query_expansion import expand_with_wordnet
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -226,8 +227,9 @@ def search(request):
     id = request.GET.get('id', '-1')
     query = query.lower()
 
-    if id==-1:
-        query_expand = get_query_expand(query)
+    if id=='-1':
+        tokenized_query = get_tokenized_query(nlp, query)
+        query_expand = str(' '.join(expand_with_wordnet(tokenized_query)))
         query_vector = vectorizer.transform([query_expand])
         semantic_query = lsa_model.transform(query_vector)
     else:
