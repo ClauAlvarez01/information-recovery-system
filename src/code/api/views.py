@@ -8,7 +8,7 @@ from api.boolean_model import BooleanModel
 from api.LSI_model import lsi_model
 from api.evaluations import Evaluation
 from api.query_processing import get_tokenized_query
-from api.query_expansion import expand_with_wordnet
+from api.query_expansion import get_synonyms_for_context
 import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -229,7 +229,8 @@ def search(request):
 
     if id=='-1':
         tokenized_query = get_tokenized_query(nlp, query)
-        query_expand = str(' '.join(expand_with_wordnet(tokenized_query)))
+        query_expand = ' '.join(get_synonyms_for_context(tokenized_query))
+        print(f'consulta expandida: {query_expand}')
         query_vector = vectorizer.transform([query_expand])
         semantic_query = lsa_model.transform(query_vector)
     else:
